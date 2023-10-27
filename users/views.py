@@ -10,9 +10,11 @@ from django.core.cache import BaseCache
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
+from posts.permission import IsOwnerOrReadOnly
 
 # register
 class UserRegisterViewset(viewsets.ViewSet):
+    """ this method is used to create user side """
 
     def create(self,request):
         serializer = UserSerializer(data=request.data)
@@ -33,7 +35,15 @@ class UserLogoutView(APIView):
             return Response({"message": "No token provided"}, status=status.HTTP_400_BAD_REQUEST)
         
 ## login user    
+""" 
+Already created a superuser 
+
+use credentials : email : admin@gmail.com
+                  pass : 12345
+"""
+
 class UserLoginView(APIView):
+    """ this method is used to Login user also have a seperate api to create token also(api/token/ in project url)"""
     def post(self, request):
         email = request.data.get('email')
         password = request.data.get('password')
@@ -50,9 +60,10 @@ class UserLoginView(APIView):
 
 ## update retrieve delete my account
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """ this method is used to get update and delete user account only if it is curent logined user"""
     queryset = Account.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated,IsOwnerOrReadOnly]
 
     def get_object(self):
         return self.request.user

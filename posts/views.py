@@ -10,6 +10,8 @@ from django.shortcuts import get_object_or_404
 
 
 class BlogList(APIView):
+    """ this method is used to list all blog post for user side"""
+
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'posts.html'
 
@@ -18,6 +20,8 @@ class BlogList(APIView):
         return Response({'posts': queryset})
 
 class PostDetail(APIView):
+    """ this method is used to get perticular blog post for user side also it will increment the view count when user visited"""
+
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'post_details.html'
 
@@ -30,12 +34,16 @@ class PostDetail(APIView):
 
 
 class BlogPostViewSet(viewsets.ModelViewSet):
+    """ this method is used blog post CRUD operation on Admin side"""
+
     queryset = BlogPost.objects.all()
     serializer_class = BlogSerializer
     permission_classes = [IsAdminUser]
 
 
 class VoteViewSet(viewsets.ModelViewSet):
+    """ this method is used to Like and dislike perticular blog post for user side  with custom permision to avoid multiple likes for a post by same user"""
+
     queryset=Vote.objects.all()
     serializer_class=VoteSerializer
     permission_classes=[permissions.IsAuthenticatedOrReadOnly,hasSelfVotedOrReadOnly]
@@ -65,7 +73,8 @@ class VoteViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    """Comments"""
+    """ this method is used to comment blog post for user side"""
+
     queryset = UserFeedback.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated,IsOwnerOrReadOnly]
